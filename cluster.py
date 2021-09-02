@@ -8,13 +8,12 @@ from sklearn.metrics import silhouette_score
 def main():
     data = pd.read_pickle("transformed_data.pkl")
 
-    # TODO k-means++: 
     K = range(1, 10)
     inertia_per_k = []
     for k in K:
         inertia_per_run = []
         for _ in range(5):
-            model = KMeans(n_clusters=k)
+            model = KMeans(n_clusters=k, init = "k-means++")
             model.fit(data)
             inertia_per_run.append(model.inertia_)
         inertia_per_k.append(sum(inertia_per_run)/len(inertia_per_run))
@@ -30,12 +29,12 @@ def main():
     for k in range(2, 10):
         scores = []
         for _ in range(5):
-            model = KMeans(n_clusters=k)
+            model = KMeans(n_clusters=k, init = "k-means++")
             labels = model.fit_predict(data)
             scores.append(silhouette_score(data, labels))
         print("For " + str(k) + " clusters, the silhouette score is: " + str(sum(scores)/len(scores)))
 
-    # TODO 2 seperate clusterings, one per gender for better visualisation
+    # TODO 2 seperate clusterings, one per gender for better visualisation => or one plot, with different forms
     model = KMeans(n_clusters = 5)
     labels = model.fit_predict(data)
     labels = pd.DataFrame(labels, columns=["cluster"])
