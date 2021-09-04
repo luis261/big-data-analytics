@@ -32,19 +32,13 @@ def main():
             model = KMeans(n_clusters=k, init = "k-means++")
             labels = model.fit_predict(data)
             scores.append(silhouette_score(data, labels))
-        print("For " + str(k) + " clusters, the silhouette score is: " + str(sum(scores)/len(scores)))
+        print("For " + str(k) + " clusters, the silhouette score is: " + str(sum(scores)/len(scores)) + ".")
+    print("\n")
 
-    # TODO 2 seperate clusterings, one per gender for better visualisation => or one plot, with different forms
     model = KMeans(n_clusters = 5)
     labels = model.fit_predict(data)
     labels = pd.DataFrame(labels, columns=["cluster"])
     clustered_data = pd.concat([data, labels], axis= 1)
-
-    cluster0 = clustered_data[clustered_data["cluster"] == 0]
-    cluster1 = clustered_data[clustered_data["cluster"] == 1]
-    cluster2 = clustered_data[clustered_data["cluster"] == 2]
-    cluster3 = clustered_data[clustered_data["cluster"] == 3]
-    cluster4 = clustered_data[clustered_data["cluster"] == 4]
 
     fig = plt.figure()
     ax = Axes3D(fig)
@@ -54,13 +48,35 @@ def main():
     ax.set_zlabel("Spending Score (1-100)")
     plt.show()
 
+    clusters = []
+    clusters.append(clustered_data[clustered_data["cluster"] == 0])
+    clusters.append(clustered_data[clustered_data["cluster"] == 1])
+    clusters.append(clustered_data[clustered_data["cluster"] == 2])
+    clusters.append(clustered_data[clustered_data["cluster"] == 3])
+    clusters.append(clustered_data[clustered_data["cluster"] == 4])
+
+    # separate customers by gender to be able to dispay them differently
+    male_points_per_cluster = []
+    female_points_per_cluster = []
+    for cluster in clusters:
+        male_points_per_cluster.append(cluster[cluster["Gender"] == 0])
+        female_points_per_cluster.append(cluster[cluster["Gender"] == 1])
+    clusters_separated_by_gender = [male_points_per_cluster, female_points_per_cluster]
+    colors = ["#f23c14", "#72f214", "#14f2e5", "#f214cd", "#2c14f2"]
+    markers = ["o", "x"]
+
     fig = plt.figure()
     ax = Axes3D(fig)
-    ax.scatter(cluster0["Age"], cluster0["Annual Income (k$)"], cluster0["Spending Score (1-100)"], c = "#f23c14")
-    ax.scatter(cluster1["Age"], cluster1["Annual Income (k$)"], cluster1["Spending Score (1-100)"], c = "#72f214")
-    ax.scatter(cluster2["Age"], cluster2["Annual Income (k$)"], cluster2["Spending Score (1-100)"], c = "#14f2e5")
-    ax.scatter(cluster3["Age"], cluster3["Annual Income (k$)"], cluster3["Spending Score (1-100)"], c = "#f214cd")
-    ax.scatter(cluster4["Age"], cluster4["Annual Income (k$)"], cluster4["Spending Score (1-100)"], c = "#2c14f2")
+    for i in range(len(clusters_separated_by_gender[0])):
+        customers_per_gender = {}
+        for j in range(len(clusters_separated_by_gender)):
+            gender = "male" if j == 0 else "female"
+            try:
+                customers_per_gender[gender] += clusters_separated_by_gender[j][i].shape[0]
+            except KeyError:
+                customers_per_gender[gender] = clusters_separated_by_gender[j][i].shape[0]
+            ax.scatter(clusters_separated_by_gender[j][i]["Age"], clusters_separated_by_gender[j][i]["Annual Income (k$)"], clusters_separated_by_gender[j][i]["Spending Score (1-100)"], c = colors[i], marker = markers[j])
+        print("The cluster with the color " + colors[i] + " has " + str((100 * customers_per_gender["male"])/(customers_per_gender["male"] + customers_per_gender["female"])) + "% male customers.")
     ax.set_xlabel("Age")
     ax.set_ylabel("Annual Income (k$)")
     ax.set_zlabel("Spending Score (1-100)")
