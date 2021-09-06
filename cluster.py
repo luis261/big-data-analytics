@@ -25,15 +25,19 @@ def main():
     plt.title("Scree-Plot")
     plt.show()
 
-    # TODO Visualisation: https://scikit-learn.org/stable/auto_examples/cluster/plot_kmeans_silhouette_analysis.html
+    averaged_scores = []
     for k in range(2, 10):
         scores = []
         for _ in range(5):
             model = KMeans(n_clusters=k, init = "k-means++")
             labels = model.fit_predict(data)
             scores.append(silhouette_score(data, labels))
-        print("For " + str(k) + " clusters, the silhouette score is: " + str(sum(scores)/len(scores)) + ".")
+        averaged_scores.append(sum(scores)/len(scores))
+        print("For " + str(k) + " clusters, the silhouette score is: " + str(averaged_scores[-1]) + ".")
     print("\n")
+
+    plt.bar(range(2, 10), averaged_scores)
+    plt.show()
 
     model = KMeans(n_clusters = 5)
     labels = model.fit_predict(data)
