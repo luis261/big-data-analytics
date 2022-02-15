@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 
 
 def shorten_column_names(dataframe):
-    dataframe.columns = ["ID", "GEN", "Age", "INC", "Score"]
+    dataframe.columns = ["GEN", "Age", "INC", "Score"]
     return dataframe
     
 

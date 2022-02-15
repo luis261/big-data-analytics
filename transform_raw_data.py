@@ -8,6 +8,9 @@ from sklearn.preprocessing import MinMaxScaler
 def main():
     file_name = "transformed_data.pkl"
     data = pd.read_csv("raw_data/mall_customers.csv", decimal = ",")
+
+    data.drop(columns=["CustomerID"], inplace=True)
+
     data["Gender"] = data["Gender"].map({"Female": 1, "Male": 0})
 
     columns_to_scale = list(data.columns)
