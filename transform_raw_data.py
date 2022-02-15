@@ -11,7 +11,7 @@ def main():
 
     print("Transformed data:")
     print(data)
-    data.to_pickle("transformed_data.pkl")
+    data.to_pickle(file_name)
     print("\nPersisted the transformed data in the file \"" + file_name + "\"")
 
 

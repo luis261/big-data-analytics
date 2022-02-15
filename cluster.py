@@ -42,6 +42,7 @@ def cluster_data_and_show(data, k):
                     customers_per_gender[gender] = clusters_separated_by_gender[j][i].shape[0]
                 ax.scatter(clusters_separated_by_gender[j][i]["Age"], clusters_separated_by_gender[j][i]["Annual Income (k$)"], clusters_separated_by_gender[j][i]["Spending Score (1-100)"], c = colors[i], marker = markers[j])
             print("The cluster with the color " + colors[i] + " has " + str((100 * customers_per_gender["male"])/(customers_per_gender["male"] + customers_per_gender["female"])) + "% male customers.")
+        print("\n")
         ax.set_xlabel("Age")
         ax.set_ylabel("Annual Income (k$)")
         ax.set_zlabel("Spending Score (1-100)")
@@ -91,6 +92,7 @@ def main():
     ax.set_zlabel("Spending Score (1-100)")
     plt.show()
 
+    cluster_data_and_show(data, 2)
     cluster_data_and_show(data, 3)
     cluster_data_and_show(data, 5)
 
