@@ -83,10 +83,6 @@ def main():
     ax.set_zlabel("Spending Score (1-100)")
     plt.show()
 
-    cluster_data_and_show(data, 2)
-    cluster_data_and_show(data, 3)
-    cluster_data_and_show(data, 4)
-    cluster_data_and_show(data, 5)
     cluster_data_and_show(data, 6)
 
 
