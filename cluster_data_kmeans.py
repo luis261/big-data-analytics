@@ -8,14 +8,19 @@ from sklearn.metrics import silhouette_score
 class ColorException(Exception):
     pass
 
+
 def cluster_data_and_show(data, k):
-    if k > 5:
+    if k > 6:
         raise ColorException("k exceeds amount of available colors")
 
+    gender_data = data["Gender"]
+    data.drop(columns=["Gender"], inplace=True)
     model = KMeans(n_clusters = k)
     labels = model.fit_predict(data)
+    data["Gender"] = gender_data
     labels = pd.DataFrame(labels, columns=["cluster"])
     clustered_data = pd.concat([data, labels], axis= 1)
+
     clusters = []
     for i in range(k):
         clusters.append(clustered_data[clustered_data["cluster"] == i])
@@ -27,7 +32,7 @@ def cluster_data_and_show(data, k):
         male_points_per_cluster.append(cluster[cluster["Gender"] == 0])
         female_points_per_cluster.append(cluster[cluster["Gender"] == 1])
     clusters_separated_by_gender = [male_points_per_cluster, female_points_per_cluster]
-    colors = ["#f23c14", "#72f214", "#14f2e5", "#f214cd", "#2c14f2"]
+    colors = ["#f23c14", "#72f214", "#14f2e5", "#f214cd", "#2c14f2", "#5e008a"]
     markers = ["o", "x"]
 
     fig = plt.figure()
@@ -51,15 +56,17 @@ def cluster_data_and_show(data, k):
 
 def main():
     data = pd.read_pickle("transformed_data.pkl")
-    print(data.columns)
 
     averaged_scores = []
     for k in range(2, 10):
         scores = []
         for _ in range(5):
+            gender_data = data["Gender"]
+            data.drop(columns=["Gender"], inplace=True)
             model = KMeans(n_clusters=k, init = "k-means++")
             labels = model.fit_predict(data)
             scores.append(silhouette_score(data, labels))
+            data["Gender"] = gender_data
         averaged_scores.append(sum(scores)/len(scores))
         print("For " + str(k) + " clusters, the silhouette score is: " + str(averaged_scores[-1]) + ".")
     print("\n")
@@ -78,7 +85,9 @@ def main():
 
     cluster_data_and_show(data, 2)
     cluster_data_and_show(data, 3)
+    cluster_data_and_show(data, 4)
     cluster_data_and_show(data, 5)
+    cluster_data_and_show(data, 6)
 
 
 if __name__ == "__main__":
